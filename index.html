@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Conversor de Moedas</title>
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      margin-top: 50px;
+    }
+    input, button {
+      padding: 10px;
+      margin: 5px;
+    }
+    .resultado {
+      margin-top: 20px;
+    }
+    img {
+      width: 80px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>💰 Conversor de Moedas</h1>
+
+  <input type="text" id="moeda" placeholder="Ex: USD, EUR, BTC">
+  <br>
+  <button onclick="buscarMoeda()">Converter</button>
+  <button onclick="limpar()">Limpar</button>
+
+  <div id="resultado"></div>
+
+  <script>
+    function buscarMoeda() {
+      const moeda = document.getElementById("moeda").value.toUpperCase();
+      const resultado = document.getElementById("resultado");
+
+      if (moeda === "") {
+        resultado.innerHTML = "Digite uma moeda!";
+        return;
+      }
+
+      resultado.innerHTML = "⏳ Carregando...";
+
+      const url = `https://economia.awesomeapi.com.br/json/last/${moeda}-BRL`;
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          console.log(data);
+
+          const key = moeda + "BRL";
+          const info = data[key];
+
+          resultado.innerHTML = `
+            <h2>${info.name}</h2>
+            <p>💵 Valor atual: R$ ${parseFloat(info.bid).toFixed(2)}</p>
+            <p>📊 Máximo: R$ ${parseFloat(info.high).toFixed(2)}</p>
+            <p>📉 Mínimo: R$ ${parseFloat(info.low).toFixed(2)}</p>
+            <p>📅 Data: ${info.create_date}</p>
+          `;
+        })
+        .catch(error => {
+          resultado.innerHTML = "❌ Erro ao buscar dados!";
+          console.error(error);
+        });
+    }
+
+    function limpar() {
+      document.getElementById("moeda").value = "";
+      document.getElementById("resultado").innerHTML = "";
+    }
+  </script>
+
+</body>
+</html>
